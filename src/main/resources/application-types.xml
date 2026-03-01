@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="recordInputCSVFile" format="csv">
+      <types:shape format="weave" example="examples/sample_10000_records.csv"><![CDATA[%dw 2.0
+
+type recordInputCSVFile = Array<{|  ID: String,   NAME: String,   AGE: String,   POSTCODE: String|}> {"header": "true",
+"headerLineNumber": "0",
+"isQuotedString": "false"}
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+    <types:type name="recordOutputJSONFile" format="json">
+      <types:shape format="weave" example="examples/record_sample.json"><![CDATA[%dw 2.0
+
+type recordOutputJSONFile = Array<{|  EMP_ID: Number {"typeId": "int"},   EMP_NAME: String,   EMP_AGE: Number {"typeId": "int"},   EMP_POSTCODE: Number {"typeId": "int"}|}> {"example": "[{\\\"EMP_ID\\\":2000,\\\"EMP_NAME\\\":\\\"JOHN\\\",\\\"EMP_AGE\\\":25,\\\"EMP_POSTCODE\\\":1010},{\\\"EMP_ID\\\":2000,\\\"EMP_NAME\\\":\\\"JOHN\\\",\\\"EMP_AGE\\\":25,\\\"EMP_POSTCODE\\\":1010}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#dffcd28b-a467-4900-8369-6f38846aa3d3">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="recordInputCSVFile"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="recordOutputJSONFile"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#a89d3b66-a873-43cb-9caf-87f74f224bcb">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="recordInputCSVFile"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="recordOutputJSONFile"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

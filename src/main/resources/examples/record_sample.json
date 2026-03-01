@@ -1,0 +1,14 @@
+[
+	{
+		"EMP_ID": 2000,
+		"EMP_NAME": "JOHN",
+		"EMP_AGE": 25,
+		"EMP_POSTCODE": 1010
+	},
+	{
+		"EMP_ID": 2000,
+		"EMP_NAME": "JOHN",
+		"EMP_AGE": 25,
+		"EMP_POSTCODE": 1010
+	}
+]

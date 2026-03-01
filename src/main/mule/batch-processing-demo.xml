@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8b8444d6-c40d-4bf1-8fa0-f3c73f16a06e" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="66d6cd5a-cd3f-4806-9393-e1c54095367d" />
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="7b4d04c6-7865-46b9-9e99-b155cb4be721" >
+		<db:mssql-connection host="localhost" port="1433" user="sa" password="test123" databaseName="course-db"/>
+	</db:config>
+	<flow name="batch-processing-with-foreach-demoFlow" doc:id="c43d5178-0712-4fc0-957c-f9e55f185c3b" >
+		<http:listener doc:name="Listener" doc:id="94741341-e174-45d9-997d-99cc0424beb1" config-ref="HTTP_Listener_config" path="/batch"/>
+		<file:read doc:name="Read" doc:id="ff981de6-a3a6-4760-8f97-d5f107f12626" config-ref="File_Config" path="D:\KI\mulesoft\batchJob\input\sample_10000_records.csv"/>
+		<logger level="INFO" doc:name="Logger" doc:id="bde4d64d-297a-4999-b606-76fc5a8c4f78" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="dffcd28b-a467-4900-8369-6f38846aa3d3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	EMP_ID: payload01.ID as Number,
+	EMP_NAME: payload01.NAME,
+	EMP_AGE: payload01.AGE as Number,
+	EMP_POSTCODE: payload01.POSTCODE as Number
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="CSV to JSON file transformation" doc:id="0bf8e634-e0f5-4d83-bbbc-34fb900585e4" message="#[payload]" />
+		<!-- [STUDIO:"[1-10]"]<set-payload value='#[["mel","syd","perth"&#93;&#93;' doc:name="[1-10&#93;" doc:id="2661c142-1658-4ac2-8127-206d6f4e390c" /> [STUDIO] -->
+		<foreach doc:name="For Each" doc:id="d70c67dc-c1ef-4e17-b138-63b4d6da91ce" collection="#[payload]">
+			<logger level="INFO" doc:name="Logger" doc:id="49aa1fc2-ad9c-494d-8c5e-0b2d255c279f" message="#[payload.EMP_NAME]" />
+			<db:insert doc:name="Insert" doc:id="5368d3a6-674a-4d58-b43f-93b46f2d0e3a" config-ref="Database_Config">
+				<reconnect />
+				<db:sql ><![CDATA[insert into employee values (:EMP_ID,:EMP_NAME,:EMP_AGE,:EMP_POSTCODE)]]></db:sql>
+				<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
+			</db:insert>
+		</foreach>
+	</flow>
+	<flow name="batch-processing-bulkInsert-demoFlow-10kRecords" doc:id="1aa66105-fcd9-4958-a430-339083c74126" >
+		<http:listener doc:name="Listener" doc:id="69089ea4-91a1-4ce3-ba67-413aef4e32b3" config-ref="HTTP_Listener_config" path="/bulkBatch"/>
+		<file:read doc:name="Read" doc:id="11ed399a-30dd-4c5d-8e58-08e33b721b25" config-ref="File_Config" path="D:\KI\mulesoft\batchJob\input\sample_10000_records.csv" />
+		<logger level="INFO" doc:name="Logger" doc:id="fb5cc0a3-8df1-4387-b26c-23f803a19142" message="#[payload]" />
+		<ee:transform doc:name="Transform Message" doc:id="a89d3b66-a873-43cb-9caf-87f74f224bcb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	EMP_ID: payload01.ID as Number,
+	EMP_NAME: payload01.NAME,
+	EMP_AGE: payload01.AGE as Number,
+	EMP_POSTCODE: payload01.POSTCODE as Number
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="CSV to JSON file transformation" doc:id="36156416-ebc3-4d75-ac70-35f379162c52" message="#[payload]" />
+		<db:bulk-insert doc:name="Bulk insert" doc:id="bfb76877-ea9c-427e-b140-aba43ec05c1b" config-ref="Database_Config">
+			<db:sql ><![CDATA[INSERT INTO EMPLOYEE VALUES(:EMP_ID,:EMP_NAME,:EMP_AGE,:EMP_POSTCODE)]]></db:sql>
+		</db:bulk-insert>
+	</flow>
+	<flow name="batch-processing-batchJob-demoFlow" doc:id="0730ccd6-94c0-4951-b23b-b2c88f534763" >
+		<http:listener doc:name="Listener" doc:id="6119fca8-a8ac-4e24-af16-7dcf082d5d4d" config-ref="HTTP_Listener_config" path="/batchJob"/>
+		<set-payload value='#[[1,2,"a",4,5,"b","c"]]' doc:name='[1,2,"a",4,5,"b","c"]' doc:id="00c8debb-5b4f-4234-802b-bb0272e9d2a0" />
+		<batch:job jobName="batch-processing-demoBatch_Job" doc:id="8d8ea17d-0bfa-4dc3-af97-d716124e5908" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="bcb49dbe-426d-4873-a5f6-f7590e522f67" acceptPolicy="ALL">
+					<set-payload value="#[payload *10]" doc:name="payload *10" doc:id="a72dcb30-6254-4679-b1eb-a121b4c360cd" />
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="71d5952f-7706-4ea3-97a1-de01832f274e" size="2">
+						<logger level="INFO" doc:name="Multiply aggregator Logger" doc:id="8fd79646-d4ed-4094-95c8-2d34c14f112d" message="#[payload]" />
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="Logger" doc:id="6bfc317b-3655-4de3-a4c2-32f8dfc2ec39" message="#[payload]" />
+			</batch:on-complete>
+		</batch:job>
+	</flow>
+</mule>
