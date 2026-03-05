@@ -67,7 +67,7 @@ payload map ( payload01 , indexOfPayload01 ) -> {
 	</flow>
 	<flow name="batch-processing-batchJob-demoFlow" doc:id="0730ccd6-94c0-4951-b23b-b2c88f534763" >
 		<http:listener doc:name="Listener" doc:id="6119fca8-a8ac-4e24-af16-7dcf082d5d4d" config-ref="HTTP_Listener_config" path="/batchJob"/>
-		<set-payload value='#[[1,2,"a",4,5,"b","c"]]' doc:name='[1,2,"a",4,5,"b","c"]' doc:id="00c8debb-5b4f-4234-802b-bb0272e9d2a0" />
+		<set-payload value='#[[1,2,"a",4,5,"b","d"]]' doc:name='[1,2,"a",4,5,"b","c"]' doc:id="00c8debb-5b4f-4234-802b-bb0272e9d2a0" />
 		<batch:job jobName="batch-processing-demoBatch_Job" doc:id="8d8ea17d-0bfa-4dc3-af97-d716124e5908" >
 			<batch:process-records >
 				<batch:step name="Batch_Step" doc:id="bcb49dbe-426d-4873-a5f6-f7590e522f67" acceptPolicy="ALL">
@@ -81,5 +81,6 @@ payload map ( payload01 , indexOfPayload01 ) -> {
 				<logger level="INFO" doc:name="Logger" doc:id="6bfc317b-3655-4de3-a4c2-32f8dfc2ec39" message="#[payload]" />
 			</batch:on-complete>
 		</batch:job>
+		<logger level="INFO" doc:name="Logger" doc:id="7375c024-013f-4a6c-9360-f70779ba3c21" message='"This batch process end and message is from outside batch job component."'/>
 	</flow>
 </mule>
