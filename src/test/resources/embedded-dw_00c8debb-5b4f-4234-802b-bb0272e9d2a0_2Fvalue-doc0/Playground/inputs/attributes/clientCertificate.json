@@ -1,0 +1,73 @@
+{
+  "basicConstraints": 79,
+  "criticalExtensionOIDs": [
+    "nisi",
+    "a",
+    "sodales"
+  ],
+  "extendedKeyUsage": [
+    "dolor",
+    "ut",
+    "lectus"
+  ],
+  "extensions": [
+    {
+      "criticality": false,
+      "oid": "sodales"
+    }
+  ],
+  "issuerAlternativeNames": [
+    {
+      "name": "Cedrick",
+      "type": 54
+    }
+  ],
+  "issuerDN": {
+    "commonName": "Fusce",
+    "name": "Abbey"
+  },
+  "issuerUniqueID": [
+    false,
+    false
+  ],
+  "issuerX500Principal": {
+    "name": "Aimee"
+  },
+  "keyUsage": [
+    true,
+    false,
+    true
+  ],
+  "name": "Cody",
+  "nonCriticalExtensionOIDs": [
+    "sodales",
+    "nunc"
+  ],
+  "publicKey": {
+    "algorithm": "tincidunt",
+    "modulus": 79,
+    "params": 84,
+    "publicKey": "consectetur"
+  },
+  "serialNumber": 3,
+  "serialNumberObject": {
+    "serialNumber": 62
+  },
+  "sigAlgName": "a",
+  "sigAlgOID": "ipsum",
+  "subjectAlternativeNames": [
+    {
+      "name": "Alex",
+      "type": 78
+    }
+  ],
+  "subjectDN": {
+    "commonName": "arcu",
+    "name": "Dannie"
+  },
+  "subjectX500Principal": {
+    "name": "Clay"
+  },
+  "type": "molestie",
+  "version": 94
+}
